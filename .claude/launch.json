@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "recut-web",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["expo", "start", "--web", "--port", "8082"],
+      "port": 8082
+    },
+    {
+      "name": "car-inspector",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "/Users/tejkaranam/used-car-inspector"],
+      "port": 3000
+    },
+    {
+      "name": "portfolio",
+      "runtimeExecutable": "hugo",
+      "runtimeArgs": ["server", "-D", "-s", "/Users/tejkaranam/Downloads/portfolio", "--port", "1313"],
+      "port": 1313
+    }
+  ]
+}

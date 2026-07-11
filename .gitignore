@@ -39,3 +39,12 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# local Claude Code settings
+.claude/settings.local.json
+
+# server render artifacts (keep dirs, ignore generated files)
+server/output/*
+!server/output/.gitkeep
+server/uploads/*
+!server/uploads/.gitkeep
