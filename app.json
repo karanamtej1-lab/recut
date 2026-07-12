@@ -1,15 +1,22 @@
 {
   "expo": {
-    "name": "recut-app",
-    "slug": "recut-app",
+    "name": "Todo Reminder",
+    "slug": "todo-reminder",
     "version": "1.0.0",
+    "scheme": "todoreminder",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.tejkaranam.todoreminder",
+      "infoPlist": {
+        "UIBackgroundModes": []
+      }
     },
     "android": {
+      "package": "com.tejkaranam.todoreminder",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -20,6 +27,25 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-status-bar",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "reminders"
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Todo Reminder uses the microphone so you can dictate new tasks.",
+          "speechRecognitionPermission": "Todo Reminder uses speech recognition to turn your dictated words into a task title and due date."
+        }
+      ]
+    ]
   }
 }
