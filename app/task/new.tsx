@@ -24,6 +24,7 @@ import {
 import DueDatePicker from '../../components/DueDatePicker';
 import { createTask } from '../../lib/db';
 import { formatDueDate } from '../../lib/format';
+import { parseTaskPhrase } from '../../lib/parse';
 import { syncAllReminders } from '../../lib/reminders';
 
 /** Default due date for a fresh manual task: tomorrow 5 PM. */
@@ -44,6 +45,27 @@ export default function NewTaskScreen() {
   const [title, setTitle] = useState(params.title ?? '');
   const [due, setDue] = useState<Date>(parsedDueAt ? new Date(parsedDueAt) : defaultDue());
   const [saving, setSaving] = useState(false);
+  // Live natural-language date detection as the user types the title, so
+  // typed entry is as smart as voice ("pay rent next Friday" → date + clean title).
+  const [suggestion, setSuggestion] = useState<{ title: string; dueAt: number } | null>(null);
+
+  const onChangeTitle = (text: string) => {
+    setTitle(text);
+    const parsed = parseTaskPhrase(text);
+    // Only suggest when a date was found AND stripping it changes the title.
+    setSuggestion(
+      parsed.dueAt !== null && parsed.title && parsed.title.toLowerCase() !== text.trim().toLowerCase()
+        ? { title: parsed.title, dueAt: parsed.dueAt }
+        : null
+    );
+  };
+
+  const applySuggestion = () => {
+    if (!suggestion) return;
+    setTitle(suggestion.title);
+    setDue(new Date(suggestion.dueAt));
+    setSuggestion(null);
+  };
 
   const save = async () => {
     const cleanTitle = title.trim();
@@ -83,11 +105,20 @@ export default function NewTaskScreen() {
         <TextInput
           style={styles.input}
           value={title}
-          onChangeText={setTitle}
-          placeholder="What needs doing?"
+          onChangeText={onChangeTitle}
+          placeholder="What needs doing?  (e.g. pay rent next Friday)"
           autoFocus={!fromVoice}
           returnKeyType="done"
         />
+
+        {suggestion && (
+          <Pressable style={styles.suggestion} onPress={applySuggestion}>
+            <Text style={styles.suggestionText}>
+              📅 Detected “{formatDueDate(suggestion.dueAt)}” — tap to set the date and rename to “
+              {suggestion.title}”.
+            </Text>
+          </Pressable>
+        )}
 
         <Text style={styles.label}>Due date & time</Text>
         <Text style={styles.dueSummary}>{formatDueDate(due.getTime())}</Text>
@@ -137,6 +168,15 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#d8dbe0',
   },
+  suggestion: {
+    backgroundColor: '#fff6e6',
+    borderRadius: 10,
+    padding: 12,
+    marginTop: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#f0d9a8',
+  },
+  suggestionText: { fontSize: 14, color: '#8a6d1a', lineHeight: 19 },
   dueSummary: { fontSize: 15, color: '#0a7ea4', fontWeight: '600', marginBottom: 4 },
   saveButton: {
     backgroundColor: '#0a7ea4',
